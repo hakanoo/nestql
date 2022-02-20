@@ -88,14 +88,12 @@ func getRecords(query string) interface{} {
 
 	for rows.Next() {
 		values, _ := rows.Values()
-		//fieldDescriptions := rows.FieldDescriptions()
+		fieldDescriptions := rows.FieldDescriptions()
 
-		//fieldValueMap := make(map[string]interface{}, len(values))
-		fieldValueMap := make([]interface{}, len(values))
+		fieldValueMap := make(map[string]interface{}, len(values))
 
 		for j := 0; j < len(values); j++ {
-			//fieldValueMap[string(fieldDescriptions[j].Name)] = values[j]
-			fieldValueMap[j] = values[j]
+			fieldValueMap[string(fieldDescriptions[j].Name)] = values[j]
 		}
 
 		result = append(result, fieldValueMap)
