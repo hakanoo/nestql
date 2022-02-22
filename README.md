@@ -1,8 +1,10 @@
 # nestql
 
-nestql is a no-code tool that converts sql statements into restfull APIs.
+nestql is a no-code tool that converts sql statements to restfull APIs.
 
-You just need to provide the route path and the associated SQL statement, your Web API server is ready!
+Especially suitable for mock server development. 
+
+You just need to provide the route paths and the associated SQL statements, your Web API server is ready!
 
 A sample config file looks like this:
 
