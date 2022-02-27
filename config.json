@@ -2,12 +2,12 @@
   "dbConnString": "postgres://postgres:pass1234@localhost:5432/mydb",
   "services": [
     {
-      "route": "/person",
-      "query": "select id, name, dob from test2"
+      "route": "/person/:id",
+      "query": "select id, name, dob from test2 where id = {{id}}"
     },
     {
-      "route": "/person1",
-      "query": "select id, name, dob from test2 where id = 1"
+      "route": "/persons",
+      "query": "select id, name, dob from test2"
     }
   ]
 }

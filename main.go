@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"regexp"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v4"
@@ -109,6 +111,19 @@ func getRecords(query string) interface{} {
 
 func getHandler(i int) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.IndentedJSON(http.StatusOK, getRecords(config.Services[i].Query))
+		queryStr := generateQueryStr(c, config.Services[i].Query)
+		c.IndentedJSON(http.StatusOK, getRecords(queryStr))
 	}
+}
+
+func generateQueryStr(c *gin.Context, queryTemplate string) string {
+	re := regexp.MustCompile("{{(\\w|\\d|\\s)+}}") // find {{param}} tags in query string
+	var tags = re.FindAllString(queryTemplate, -1)
+	for i := 0; i < len(tags); i++ {
+		tag := tags[0][2 : len(tags[0])-2]
+		param := c.Param(tag)
+		queryTemplate = strings.Replace(queryTemplate, tags[0], param, -1)
+	}
+
+	return queryTemplate
 }
