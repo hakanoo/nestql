@@ -17,6 +17,10 @@ A sample config file looks like this:
       "query": "select id, name, birthday from person"
     },
     {
+      "route": "/person/:id",
+      "query": "select id, name, dob from test2 where id = {{id}}"
+    },
+    {
       "route": "/departments",
       "query": "select id, name from department"
     }
@@ -46,5 +50,18 @@ response:
         "birthday": "1982-05-04T00:00:00Z",
     }
 ]
+```
+
+
+curl http://localhost:8080/person/2
+
+response:
+```yaml
+  {
+        "id": 2,
+        "name": "george"
+        "birthday": "2011-07-11T00:00:00Z",
+  }
+ 
 ```
 
