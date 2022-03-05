@@ -117,6 +117,9 @@ func getHandler(i int) gin.HandlerFunc {
 }
 
 func generateQueryStr(c *gin.Context, queryTemplate string) string {
+	jsonMap := GetJsonData(c)
+	fmt.Println(jsonMap)
+
 	re := regexp.MustCompile("{{(\\w|\\d|\\s)+}}") // find {{param}} tags in query string
 	var tags = re.FindAllString(queryTemplate, -1)
 	for i := 0; i < len(tags); i++ {
@@ -126,4 +129,15 @@ func generateQueryStr(c *gin.Context, queryTemplate string) string {
 	}
 
 	return queryTemplate
+}
+
+func GetJsonData(c *gin.Context) map[string]interface{} {
+	data, _ := ioutil.ReadAll(c.Request.Body)
+	jsonMap := make(map[string]interface{})
+	err := json.Unmarshal(data, &jsonMap)
+	if err != nil {
+		panic(err)
+	}
+
+	return jsonMap
 }
