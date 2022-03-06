@@ -118,14 +118,26 @@ func getHandler(i int) gin.HandlerFunc {
 
 func generateQueryStr(c *gin.Context, queryTemplate string) string {
 	jsonMap := GetJsonData(c)
+
 	fmt.Println(jsonMap)
 
-	re := regexp.MustCompile("{{(\\w|\\d|\\s)+}}") // find {{param}} tags in query string
+	re := regexp.MustCompile("{{(\\w|\\d|\\s|\\.)+}}") // find {{param}} tags in query string
 	var tags = re.FindAllString(queryTemplate, -1)
 	for i := 0; i < len(tags); i++ {
-		tag := tags[0][2 : len(tags[0])-2]
-		param := c.Param(tag)
-		queryTemplate = strings.Replace(queryTemplate, tags[0], param, -1)
+		tag := tags[i][2 : len(tags[0])-2]
+		tagFields := strings.Split(tag, ".")
+		if len(tagFields) < 2 {
+			fmt.Fprintf(os.Stderr, "Invalid tag: "+tag)
+			os.Exit(1)
+		}
+		if strings.ToLower(tagFields[0]) == "param" {
+			param := c.Param(tagFields[1])
+			queryTemplate = strings.Replace(queryTemplate, tags[i], param, -1)
+		} else if strings.ToLower(tagFields[0]) == "body" {
+			bodyItem := jsonMap[tagFields[1]].(string)
+			queryTemplate = strings.Replace(queryTemplate, tags[i], bodyItem, -1)
+		}
+
 	}
 
 	return queryTemplate
