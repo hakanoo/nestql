@@ -18,7 +18,7 @@ A sample config file looks like this:
     },
     {
       "route": "/person/:id",
-      "query": "select id, name, dob from test2 where id = {{id}}"
+      "query": "select id, name, dob from test2 where id = {{param.id}}"
     },
     {
       "route": "/departments",
