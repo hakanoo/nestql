@@ -20,8 +20,9 @@ type Config struct {
 }
 
 type Service struct {
-	Route string `json:"route"`
-	Query string `json:"query"`
+	Route   string `json:"route"`
+	Execute string `json:"execute"`
+	Query   string `json:"query"`
 }
 
 var conn *pgx.Conn
@@ -54,8 +55,12 @@ func main() {
 
 	for i := 0; i < len(config.Services); i++ {
 		fmt.Println("Route : " + config.Services[i].Route + " Query : " + config.Services[i].Query)
-		router.GET(config.Services[i].Route, getHandler(i))
 
+		if config.Services[i].Execute == "" {
+			router.GET(config.Services[i].Route, getHandler(i))
+		} else {
+			router.POST(config.Services[i].Route, getHandler(i))
+		}
 	}
 
 	// 4. Run services
@@ -109,8 +114,22 @@ func getRecords(query string) interface{} {
 
 }
 
+func executeSql(sql string) {
+	_, err := conn.Exec(context.Background(), sql)
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Exec failed: %v\n", err)
+		os.Exit(1)
+	}
+}
+
 func getHandler(i int) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		if config.Services[i].Execute != "" {
+			execStr := generateQueryStr(c, config.Services[i].Execute)
+			executeSql(execStr)
+		}
+
 		queryStr := generateQueryStr(c, config.Services[i].Query)
 		c.IndentedJSON(http.StatusOK, getRecords(queryStr))
 	}
@@ -124,7 +143,7 @@ func generateQueryStr(c *gin.Context, queryTemplate string) string {
 	re := regexp.MustCompile("{{(\\w|\\d|\\s|\\.)+}}") // find {{param}} tags in query string
 	var tags = re.FindAllString(queryTemplate, -1)
 	for i := 0; i < len(tags); i++ {
-		tag := tags[i][2 : len(tags[0])-2]
+		tag := tags[i][2 : len(tags[i])-2]
 		tagFields := strings.Split(tag, ".")
 		if len(tagFields) < 2 {
 			fmt.Fprintf(os.Stderr, "Invalid tag: "+tag)
@@ -145,7 +164,13 @@ func generateQueryStr(c *gin.Context, queryTemplate string) string {
 
 func GetJsonData(c *gin.Context) map[string]interface{} {
 	data, _ := ioutil.ReadAll(c.Request.Body)
+
 	jsonMap := make(map[string]interface{})
+
+	if len(data) == 0 {
+		return jsonMap
+	}
+
 	err := json.Unmarshal(data, &jsonMap)
 	if err != nil {
 		panic(err)

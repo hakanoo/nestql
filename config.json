@@ -8,6 +8,11 @@
     {
       "route": "/persons",
       "query": "select id, name, dob from test2"
+    },
+    {
+      "route": "/person/:name",
+      "execute": "insert into test2 (name, dob) values ('{{body.name}}', '{{body.dob}}')",
+      "query": "select max(id) from test2"
     }
   ]
 }
