@@ -6,6 +6,10 @@
       "query": "select id, name, dob from test2 where id = {{param.id}}"
     },
     {
+      "route": "/person2",
+      "query": "select id, name, dob from test2 where id = {{body.id.2}}"
+    },
+    {
       "route": "/persons",
       "query": "select id, name, dob from test2"
     },

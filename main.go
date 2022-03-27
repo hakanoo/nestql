@@ -153,8 +153,14 @@ func generateQueryStr(c *gin.Context, queryTemplate string) string {
 			param := c.Param(tagFields[1])
 			queryTemplate = strings.Replace(queryTemplate, tags[i], param, -1)
 		} else if strings.ToLower(tagFields[0]) == "body" {
-			bodyItem := jsonMap[tagFields[1]].(string)
-			queryTemplate = strings.Replace(queryTemplate, tags[i], bodyItem, -1)
+			bodyItem, ok := jsonMap[tagFields[1]].(string)
+			if ok {
+				queryTemplate = strings.Replace(queryTemplate, tags[i], bodyItem, -1)
+			} else {
+				if len(tagFields) > 2 {
+					queryTemplate = strings.Replace(queryTemplate, tags[i], tagFields[2], -1)
+				}
+			}
 		}
 
 	}
