@@ -144,7 +144,14 @@ func generateQueryStr(c *gin.Context, queryTemplate string) string {
 	var tags = re.FindAllString(queryTemplate, -1)
 	for i := 0; i < len(tags); i++ {
 		tag := tags[i][2 : len(tags[i])-2]
-		tagFields := strings.Split(tag, ".")
+
+		defaultValue := ""
+		defFields := strings.Split(tag, " ")
+		if len(defFields) > 1 {
+			defaultValue = defFields[1]
+		}
+
+		tagFields := strings.Split(defFields[0], ".")
 		if len(tagFields) < 2 {
 			fmt.Fprintf(os.Stderr, "Invalid tag: "+tag)
 			os.Exit(1)
@@ -157,8 +164,8 @@ func generateQueryStr(c *gin.Context, queryTemplate string) string {
 			if ok {
 				queryTemplate = strings.Replace(queryTemplate, tags[i], bodyItem, -1)
 			} else {
-				if len(tagFields) > 2 {
-					queryTemplate = strings.Replace(queryTemplate, tags[i], tagFields[2], -1)
+				if defaultValue != "" {
+					queryTemplate = strings.Replace(queryTemplate, tags[i], defaultValue, -1)
 				}
 			}
 		}

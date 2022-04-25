@@ -7,7 +7,7 @@
     },
     {
       "route": "/person2",
-      "query": "select id, name, dob from test2 where id = {{body.id.2}}"
+      "query": "select id, name, dob from test2 where id = {{body.id 2}}"
     },
     {
       "route": "/persons",
