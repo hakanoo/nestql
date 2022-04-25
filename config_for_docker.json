@@ -1,0 +1,22 @@
+{
+    "dbConnString": "postgres://postgres:pass1234@host.docker.internal:5432/mydb",
+    "services": [
+      {
+        "route": "/person/:id",
+        "query": "select id, name, dob from test2 where id = {{param.id}}"
+      },
+      {
+        "route": "/person2",
+        "query": "select id, name, dob from test2 where id = {{body.id.2}}"
+      },
+      {
+        "route": "/persons",
+        "query": "select id, name, dob from test2"
+      },
+      {
+        "route": "/person/:name",
+        "execute": "insert into test2 (name, dob) values ('{{body.name}}', '{{body.dob}}')",
+        "query": "select max(id) from test2"
+      }
+    ]
+  }

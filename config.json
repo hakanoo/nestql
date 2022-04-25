@@ -1,5 +1,5 @@
 {
-  "dbConnString": "postgres://postgres:pass1234@host.docker.internal:5432/mydb",
+  "dbConnString": "postgres://postgres:pass1234@localhost:5432/mydb",
   "services": [
     {
       "route": "/person/:id",

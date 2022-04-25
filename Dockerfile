@@ -9,7 +9,7 @@ COPY go.sum ./
 RUN go mod download
 
 COPY *.go ./
-COPY *.json ./
+COPY config_for_docker.json ./config.json
 
 RUN go build -o /docker-nestql
 
